@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 cd /opt/monroe
 #java maril.client.marilClientLaunch -d3 -h158.227.68.19 -p3446 -t3
 python experiment4.py &

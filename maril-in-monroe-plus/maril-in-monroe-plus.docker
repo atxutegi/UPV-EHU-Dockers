@@ -25,6 +25,6 @@ COPY files/ /opt/monroe/
 # Cleanup
 #RUN apt-get clean ; apt-get autoremove; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENTRYPOINT ["dumb-init", "--", "/bin/bash", "/opt/monroe/executor.sh"]
+ENTRYPOINT ["dumb-init", "--", "/bin/sh", "/opt/monroe/executor.sh"]
 
 #docker run --name test maril-in-monroe-plus "duration":4,"port":8790,"host":"123.123.123.23","preTest":true,"threads":4
