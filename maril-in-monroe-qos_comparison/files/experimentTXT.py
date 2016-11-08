@@ -98,7 +98,7 @@ def run_exp(meta_info, expconfig):
             print msg
         if not DEBUG:
 	    print ("Guid: {} DataId: {} DataVersion: {} NodeId: {} Timestamp: {} Iccid: {} Operator: {} CID: {} MCCMNC: {} Band: {} RSSI: {} IPAddress: {} IMEI: {} RSRQ: {} RSRP: {} LAC: {} Frequency: {} GPS: {}").format(expconfig['guid'], dataid, dataversion, expconfig['nodeid'], meta_info['modem']["Timestamp"], meta_info['modem']["ICCID"], meta_info['modem']["Operator"], meta_info['modem']["CID"], meta_info['modem']["NWMCCMNC"], meta_info['modem']["Band"], meta_info['modem']["RSSI"], meta_info['modem']["IPAddress"], meta_info['modem']["IMEI"], meta_info['modem']["RSRQ"], meta_info['modem']["RSRP"], meta_info['modem']["LAC"], meta_info['modem']["Frequency"], meta_info['gps'][start_gps_pos:])
-            monroe_exporter.save_output(msg, expconfig['resultdir'])
+            #monroe_exporter.save_output(msg, expconfig['resultdir']) #single JSON object
     except Exception as e:
         if expconfig['verbosity'] > 0:
             print "Execution or parsing failed: {}".format(e)
