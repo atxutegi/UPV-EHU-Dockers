@@ -35,15 +35,14 @@ EXPCONFIG = {
         "zmqport": "tcp://172.17.0.1:5556",
         "modem_metadata_topic": "MONROE.META.DEVICE.MODEM",
         "gps_metadata_topic": "MONROE.META.DEVICE.GPS",
-        "meta_grace": 60,  # Grace period to wait for interface metadata
-        "exp_grace": 60,  # Grace period before killing experiment
-        "meta_interval_check": 0.001,  # Interval to check if interface is up
+        "meta_grace": 40,  # Grace period to wait for interface metadata
+        "exp_grace": 40,  # Grace period before killing experiment
+        "meta_interval_check": 0.01,  # Interval to check if interface is up
         "verbosity": 2,  # 0 = "Mute", 1=error, 2=Information, 3=verbose
         "resultdir": "/monroe/results/",
         # These values are specic for this experiment
         #"mccmnc": "24008", #NQAS EHU "Telenor SE"
 	#"imei": 356853051151167, # nodeID 9
-	#"imei": 864154023647167, # nodeID 38
 	"imei": 864154023640774, # nodeID 39
         #"imei": 864154023648215, # nodeID 45
 	#"imei": 864154023645336, # nodeID 96
@@ -93,12 +92,15 @@ def run_exp(meta_info, expconfig):
 	    "RSRP": meta_info['modem']["RSRP"],
 	    "LAC": meta_info['modem']["LAC"],
 	    "Frequency": meta_info['modem']["Frequency"],
+	    "InterfaceName": meta_info['modem']["InterfaceName"],
+	    "InternalIPAddress": meta_info['modem']["InternalIPAddress"],
+	    "InternalInterface": meta_info['modem']["InternalInterface"],
             "GPSPositions": gps_positions
         })
         if expconfig['verbosity'] > 2:
             print msg
         if not DEBUG:
-	    print ("Guid: {} DataId: {} DataVersion: {} NodeId: {} Timestamp: {} Iccid: {} Operator: {} CID: {} MCCMNC: {} Band: {} RSSI: {} IPAddress: {} IMEI: {} RSRQ: {} RSRP: {} LAC: {} Frequency: {} GPS: {}").format(expconfig['guid'], dataid, dataversion, expconfig['nodeid'], meta_info['modem']["Timestamp"], meta_info['modem']["ICCID"], meta_info['modem']["Operator"], meta_info['modem']["CID"], meta_info['modem']["NWMCCMNC"], meta_info['modem']["Band"], meta_info['modem']["RSSI"], meta_info['modem']["IPAddress"], meta_info['modem']["IMEI"], meta_info['modem']["RSRQ"], meta_info['modem']["RSRP"], meta_info['modem']["LAC"], meta_info['modem']["Frequency"], meta_info['gps'][start_gps_pos:])
+	    print ("Guid: {} DataId: {} DataVersion: {} NodeId: {} Timestamp: {} Iccid: {} Operator: {} CID: {} MCCMNC: {} Band: {} RSSI: {} IPAddress: {} IMEI: {} RSRQ: {} RSRP: {} LAC: {} Frequency: {} InterfaceName: {} InternalIPAddress: {} InternalInterface: {} GPS: {}").format(expconfig['guid'], dataid, dataversion, expconfig['nodeid'], meta_info['modem']["Timestamp"], meta_info['modem']["ICCID"], meta_info['modem']["Operator"], meta_info['modem']["CID"], meta_info['modem']["NWMCCMNC"], meta_info['modem']["Band"], meta_info['modem']["RSSI"], meta_info['modem']["IPAddress"], meta_info['modem']["IMEI"], meta_info['modem']["RSRQ"], meta_info['modem']["RSRP"], meta_info['modem']["LAC"], meta_info['modem']["Frequency"], meta_info['modem']["InterfaceName"], meta_info['modem']["InternalIPAddress"], meta_info['modem']["InternalInterface"], meta_info['gps'][start_gps_pos:])
             #monroe_exporter.save_output(msg, expconfig['resultdir']) #single JSON object
     except Exception as e:
         if expconfig['verbosity'] > 0:
@@ -125,9 +127,9 @@ def metadata(meta_info, expconfig):
             topic = data.split(" ", 1)[0]
             msg = json.loads(data.split(" ", 1)[1])
             if topic.startswith(expconfig['modem_metadata_topic']):
-		if int(msg['IMEI']) - expconfig['imei'] == 0:
-                	for key, value in msg.iteritems():
-                		meta_info['modem'][key] = value
+		#if int(msg['IMEI']) - expconfig['imei'] == 0:
+                for key, value in msg.iteritems():
+                	meta_info['modem'][key] = value
             if topic.startswith(expconfig['gps_metadata_topic']):
                 meta_info['gps'].append(msg)
 
@@ -213,10 +215,9 @@ if __name__ == '__main__':
 
     count = 1
 
-    first_time = time.clock()
+    first_time = time.time()
 
-    #while (count<3 and time.clock > first_time + 500):
-    while (count<51):
+    while (time.time() < first_time + 90):
 	    # Could have used a thread as well but this is true multiprocessing
 	    # Create a metdata processes for getting modem and gps metadata
 	    # Will return a dict ['gps'] and ['modem']
@@ -224,9 +225,9 @@ if __name__ == '__main__':
 
 	    # Try to get metadata
 	    # if the metadata process dies we retry until the meta_grace is up
-	    start_time = time.clock()
+	    start_time = time.time()
 	    #print "Start looking for metadata matching MCCMNC {}".format(EXPCONFIG['mccmnc'])
-	    while (time.clock() - start_time < meta_grace and
+	    while (time.time() - start_time < meta_grace and
 	           (not check_modem_meta(meta_info) or
 	           len(meta_info['gps']) < 1)):
 
@@ -238,13 +239,13 @@ if __name__ == '__main__':
 	        print "No Metadata or no ip adress on interface: aborting"
 	        sys.exit(1)
 
-	    start_time_exp = time.clock()
+	    start_time_exp = time.time()
 	    exp_process = create_and_run_exp_process(meta_info, EXPCONFIG)
 
-	    while (time.clock() - start_time_exp < exp_grace and
+	    while (time.time() - start_time_exp < exp_grace and
 	           exp_process.is_alive()):
 	        
-	        elapsed_exp = time.clock() - start_time_exp
+	        elapsed_exp = time.time() - start_time_exp
 	        exp_process.join(meta_interval_check)
 
 	    # Cleanup the processes
@@ -257,7 +258,7 @@ if __name__ == '__main__':
 	            print "Experiment took too long time to finish, please check results"
 	        sys.exit(1)
 
-	    elapsed = time.clock() - start_time
+	    elapsed = time.time() - start_time
 
 	    if EXPCONFIG['verbosity'] > 1:
 		count = count + 1
