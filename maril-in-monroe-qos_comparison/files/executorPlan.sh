@@ -25,12 +25,10 @@ done
 paste operators.txt imeis.txt internalInterfaces.txt internalAddresses.txt interfaces.txt addresses.txt | pr -t -e24 > wholeNodeInterfacesInfo.txt
 cp wholeNodeInterfacesInfo.txt /monroe/results/
 
-python experimentMetaInfo.py &
+python experimentMetaInfo.py & > /opt/monroe/metaExecution.txt
 
 for o in $operators2;do
 	echo "The iteration is o=$o" >> /opt/monroe/metaStart.txt
-	#cat /opt/monroe/metaStart.txt | grep '^default' | sort | uniq | sed 's/via/gw/' | sed 's/ dev//'| sed 's/default/route del -net default netmask 0.0.0.0/' | head -1 >> /opt/monroe/metaStart.txt
-	#`cat /opt/monroe/metaStart.txt | grep '^default' | sort | uniq | sed 's/via/gw/' | sed 's/ dev//' | sed 's/default/route del -net default netmask 0.0.0.0/' | head -1`
 	cat /opt/monroe/metaStart.txt | grep '^default' | sort | uniq | awk '{print $3" "$5}' >> /opt/monroe/defaults.txt
 	def=`cat /opt/monroe/metaStart.txt | grep '^default' | sort | uniq | awk '{print $5}' | tr '\n' ' '`
 	for j in $def;do
@@ -49,9 +47,10 @@ for o in $operators2;do
 	echo "About to change with route add -net default netmask 0.0.0.0 gw $A.$B.$C.1 $interface" >> /opt/monroe/metaStart.txt
 	route add -net default netmask 0.0.0.0 gw $A.$B.$C.1 $interface 
 	ip route list >> /opt/monroe/metaStart.txt
-	#sh executorSingle.sh 	
+	cp /opt/monroe/metaStart.txt /monroe/results/metaStart2.txt
+	sh executorSingle.sh Node$id $o 	
 done
 cp /opt/monroe/metaStart.txt /monroe/results/metaStart2.txt
 echo "FINISHED"
 kill -9 `ps -ef | grep "[e]xperimentMetaInfo" | awk '{print $2}'` 
-
+cp /opt/monroe/metaExecution.txt /monroe/results/
