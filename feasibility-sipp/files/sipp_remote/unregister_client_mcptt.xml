@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+ 
+<scenario name="register_client">
+  <send retrans="500">
+    <![CDATA[
+ 
+      REGISTER sip:[field1] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      From: <sip:[field0]@[field1]>;tag=[call_number]
+      To: <sip:[field0]@[field1]>
+      Call-ID: [call_id]
+      CSeq: 1 REGISTER
+      Contact: sip:[field0]@[local_ip]:[local_port];+g.3gpp.icsi-ref="urn%3Aurn-7%3A3gpp-service.ims.icsi.mcptt";+g.3gpp.mcptt
+      Max-Forwards: 5
+      Expires: 0
+      User-Agent: MCPTTCLIENT
+      Content-Length: 0
+ 
+    ]]>
+  </send>
+
+  <recv response="100"
+        optional="true">
+  </recv>
+  
+  <recv response="403" optional="true" next="1">
+  </recv>
+ 
+  <recv response="401" auth="true">
+  </recv>  
+
+  <send retrans="500">
+    <![CDATA[
+ 
+      REGISTER sip:[field1] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      From: <sip:[field0]@[field1]>;tag=[call_number]
+      To: <sip:[field0]@[field1]>
+      Call-ID: [call_id]
+      CSeq: 2 REGISTER
+      Contact: sip:[field0]@[local_ip]:[local_port];+g.3gpp.icsi-ref="urn%3Aurn-7%3A3gpp-service.ims.icsi.mcptt";+g.3gpp.mcptt
+      [field2]
+      Max-Forwards: 5
+      Expires: 0
+      User-Agent: MCPTTCLIENT
+      Content-Length: 0
+ 
+    ]]>
+  </send>
+
+  <recv response="100"
+        optional="true">
+  </recv>
+ 
+  <recv response="200">
+  </recv>
+
+  <label id="1"/>
+</scenario>

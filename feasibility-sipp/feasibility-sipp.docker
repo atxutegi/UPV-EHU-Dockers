@@ -1,0 +1,37 @@
+FROM monroe/base
+
+MAINTAINER eneko.atxutegi@ehu.eus
+
+COPY files/ /opt/monroe/
+
+RUN apt-get update && apt-get install -y --force-yes \
+sendip \
+gawk \
+mawk \
+help2man \
+#g++ \
+libncurses5* \
+zlib1g-dev \
+libpcap-dev 
+#build-essential 
+# vim \
+#wget
+
+RUN apt-get update --fix-missing
+
+# Cleanup
+RUN apt-get clean ; apt-get autoremove; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN apt-get purge -y openssl
+RUN dpkg -i /opt/monroe/openssl/*
+#RUN cd /opt/monroe/sipp-3.5.1 ; make install
+RUN cd /opt/monroe/sipp-3.5.1; mkdir -p /usr/local/bin; install -c sipp /usr/local/bin; mkdir -p /usr/local/share/man/man1; install -c -m 644 sipp.1 /usr/local/share/man/man1 
+RUN echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
+RUN echo 'nameserver 8.8.4.4' >> /etc/resolv.conf
+
+
+#ENTRYPOINT ["dumb-init", "--", "/bin/sh", "/opt/monroe/executorVariousWget.sh"]
+#ENTRYPOINT ["dumb-init", "--", "/bin/sh", "/opt/monroe/executeKAU.sh"]
+#ENTRYPOINT ["dumb-init", "--", "/bin/sh", "/opt/monroe/executorPlan.sh"]
+#ENTRYPOINT ["dumb-init", "--", "/bin/bash", "/opt/monroe/myscript.sh"]
+#ENTRYPOINT ["dumb-init", "--", "/bin/bash", "/opt/monroe/myscript2.sh"]

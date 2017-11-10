@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+ 
+<scenario name="register_client">
+  <send retrans="500">
+    <![CDATA[
+ 
+      REGISTER sip:[field1] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      From: <sip:[field0]@[field1]>;tag=[call_number]
+      To: <sip:[field0]@[field1]>
+      Call-ID: [call_id]
+      CSeq: 1 REGISTER
+      Contact: sip:[field0]@[local_ip]:[local_port];+g.3gpp.icsi-ref="urn%3Aurn-7%3A3gpp-service.ims.icsi.mcptt";+g.3gpp.mcptt
+      Max-Forwards: 5
+      Expires: 1800
+      User-Agent: MCPTTCLIENT
+      Content-Type: application/vnd.3gpp.mcptt-info+xml
+      Content-Length: [len]
+
+      <?xml version="1.0" encoding="UTF-8"?>
+      <mcpttinfo xmlns="urn:3gpp:ns:mcpttInfo:1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <mcptt-Params>
+          <mcptt-access-token type="Normal">
+	    <mcpttString>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dnZWRJbkFzIjoiYWRtaW4iLCJpYXQiOjE0MjI3Nzk2Mzh9.gzSraSYS8EXBxLN_oWnFSRgCzcmJmMjLiuyu5CSpyHI</mcpttString>
+          </mcptt-access-token>
+          <mcptt-client-id type="Normal">
+            <mcpttString>urn:uuid:00000000-0000-1000-8000-AABBCCDDEEFF</mcpttString>
+          </mcptt-client-id>
+        </mcptt-Params>
+      </mcpttinfo>
+ 
+    ]]>
+  </send>
+
+  <recv response="100"
+        optional="true">
+  </recv>
+ 
+  <recv response="401" auth="true">
+  </recv>
+ 
+  <send retrans="500">
+    <![CDATA[
+ 
+      REGISTER sip:[field1] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      From: <sip:[field0]@[field1]>;tag=[call_number]
+      To: <sip:[field0]@[field1]>
+      Call-ID: [call_id]
+      CSeq: 2 REGISTER
+      Contact: sip:[field0]@[local_ip]:[local_port];+g.3gpp.icsi-ref="urn%3Aurn-7%3A3gpp-service.ims.icsi.mcptt";+g.3gpp.mcptt
+      [field2]
+      Max-Forwards: 5
+      Expires: 1800
+      User-Agent: MCPTTCLIENT
+      Content-Type: application/vnd.3gpp.mcptt-info+xml
+      Content-Length: [len]
+
+      <?xml version="1.0" encoding="UTF-8"?>
+      <mcpttinfo xmlns="urn:3gpp:ns:mcpttInfo:1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <mcptt-Params>
+          <mcptt-access-token type="Normal">
+            <mcpttString>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dnZWRJbkFzIjoiYWRtaW4iLCJpYXQiOjE0MjI3Nzk2Mzh9.gzSraSYS8EXBxLN_oWnFSRgCzcmJmMjLiuyu5CSpyHI</mcpttString>
+          </mcptt-access-token>
+          <mcptt-client-id type="Normal">
+            <mcpttString>urn:uuid:00000000-0000-1000-8000-AABBCCDDEEFF</mcpttString>
+          </mcptt-client-id>
+        </mcptt-Params>
+      </mcpttinfo>
+ 
+    ]]>
+  </send>
+
+  <recv response="100"
+        optional="true">
+  </recv>
+ 
+  <recv response="200">
+  </recv>
+</scenario>
