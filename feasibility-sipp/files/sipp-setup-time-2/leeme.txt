@@ -1,0 +1,23 @@
+Uso:
+
+
+- Primero registrar usuarios:
+
+sudo ./register IP_LOCAL mcptt_caller_A.csv demo.nemergent.com PUERTO_LOCAL
+sudo ./register IP_LOCAL mcptt_caller_B.csv demo.nemergent.com OTRO_PUERTO_LOCAL
+-Callee:
+
+sudo ./mcptt_answer_manual_version_13_3_0.sh IP_LOCAL mcptt_caller_B.csv demo.nemergent.com
+
+-Caller:
+
+./mcptt_private_call_manual_version_13_3_0.sh IP_LOCAL mcptt_caller_A.csv demo.nemergent.com
+
+-Para desregistrar:
+
+sudo ./deregister IP_LOCAL mcptt_caller_A.csv demo.nemergent.com 
+sudo ./deregister IP_LOCAL mcptt_caller_B.csv demo.nemergent.com 
+
+Ejemplo fichero con setup time:  setup_time_13-11-17_15-06-57.csv
+
+He usado - para separar también la hora ya que windows no soporta : en los nombres de fichero.

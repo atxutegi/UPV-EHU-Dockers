@@ -1,0 +1,2 @@
+SEQUENTIAL
+mcptt-client-A;organization.org;[authentication username=mcptt-client-A@organization.org password=mcptt-client-A];mcptt_id_clientA;organization.org;mcptt_id_clientB;organization.org;mcptt-server-orig-part.organization.org
